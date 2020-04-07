@@ -42,7 +42,7 @@ describe 'nodejs_nginx::default' do
     #   expect(chef_run).to enable_service 'nodejs'
     # end
     it 'should create a proxy.conf template in /etc/nginx/sites-available' do
-      expect(chef_run).to create_template "/etc/nginx/sites-available/proxy.conf"
+      expect(chef_run).to create_template("/etc/nginx/sites-available/proxy.conf").with_variables(proxy_port: 3000)
     end
     it 'should create a symlink proxy.conf link in /etc/nginx/sites-enabled' do
       expect(chef_run).to create_link("/etc/nginx/sites-enabled/proxy.conf").with_link_type(:symbolic)
@@ -51,10 +51,10 @@ describe 'nodejs_nginx::default' do
       expect(chef_run).to delete_link "/etc/nginx/sites-enabled/default"
     end
     it 'should install pm2 via npm' do
-      expect(chef_run).to install_nodejs_npm('pm2')
+      expect(chef_run).to install_npm_package('pm2')
     end
     it 'should install react via npm' do
-      expect(chef_run).to install_nodejs_npm('react')
+      expect(chef_run).to install_npm_package('react')
     end
   end
 end

@@ -10,7 +10,7 @@ end
 
 include_recipe 'nodejs'
 
-package 'npm'
+# package 'npm'
 npm_package 'react'
 npm_package 'pm2'
 
@@ -23,6 +23,7 @@ end
 
 template "/etc/nginx/sites-available/proxy.conf" do
   source 'proxy.conf.erb'
+  variables proxy_port: node['nginx']['proxy_port']
   notifies :restart, 'service[nginx]'
 end
 
