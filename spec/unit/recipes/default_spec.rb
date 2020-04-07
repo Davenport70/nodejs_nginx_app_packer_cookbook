@@ -17,6 +17,9 @@ describe 'nodejs_nginx::default' do
     it 'converges successfully' do
       expect { chef_run }.to_not raise_error
     end
+    it 'should run apt-get update' do
+      expect(chef_run).to update_apt_update 'update_sources'
+    end
 
     # installing
     # install Nginx
@@ -24,8 +27,8 @@ describe 'nodejs_nginx::default' do
       expect(chef_run).to install_package 'nginx'
     end
     # install nodejs_nginx
-    it 'should install nodejs' do
-      expect(chef_run).to install_package 'nodejs'
+    it 'should install nodejs from recipe' do
+      expect(chef_run).to include_recipe 'nodejs'
     end
     # services
     # start and enable
@@ -38,5 +41,20 @@ describe 'nodejs_nginx::default' do
     # it 'should enable nodejs' do
     #   expect(chef_run).to enable_service 'nodejs'
     # end
+    it 'should create a proxy.conf template in /etc/nginx/sites-available' do
+      expect(chef_run).to create_template "/etc/nginx/sites-available/proxy.conf"
+    end
+    it 'should create a symlink proxy.conf link in /etc/nginx/sites-enabled' do
+      expect(chef_run).to create_link("/etc/nginx/sites-enabled/proxy.conf").with_link_type(:symbolic)
+    end
+    it 'should delete a proxy.conf link in /etc/nginx/sites-enabled' do
+      expect(chef_run).to delete_link "/etc/nginx/sites-enabled/default"
+    end
+    it 'should install pm2 via npm' do
+      expect(chef_run).to install_nodejs_npm('pm2')
+    end
+    it 'should install react via npm' do
+      expect(chef_run).to install_nodejs_npm('react')
+    end
   end
 end
